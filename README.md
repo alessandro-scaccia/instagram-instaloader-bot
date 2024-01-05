@@ -2,7 +2,7 @@
 
 ## Attenzione!!!
 
-Lo script non avrà ulteriore supporto
+Lo script non avrà ulteriormente supporto
 
 ## Come funziona
 
