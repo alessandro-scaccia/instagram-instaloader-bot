@@ -1,5 +1,6 @@
 from io import TextIOWrapper
-from instaloader import Instaloader, Profile, NodeIterator
+from instaloader import Instaloader, Profile
+import logging
 
 
 PROFILO_LOGIN = ''
