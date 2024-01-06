@@ -94,11 +94,10 @@ def main() -> None:
         file_followees.close()
     except FileNotFoundError:
         logging.error('Non ho trovato file con cui fare il confronto')
-    '''
     except:
         logging.error(
             'Errore generico nel tentativo di confrontare con dati salvati')
-'''
+
     salva(followers_set, followees_set)
 
 
