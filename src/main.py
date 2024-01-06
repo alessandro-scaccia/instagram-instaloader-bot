@@ -2,8 +2,8 @@ from io import TextIOWrapper
 from instaloader import Instaloader, Profile, NodeIterator
 
 
-PROFILO_LOGIN = 'alessandro.scaccia_'
-PROFILO_ANALISI = 'giulii_c_02'
+PROFILO_LOGIN = ''
+PROFILO_ANALISI = ''
 
 
 def salva(followers_set: set, followees_set: set) -> None:
