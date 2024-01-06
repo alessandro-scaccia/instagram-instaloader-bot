@@ -2,27 +2,27 @@ from io import TextIOWrapper
 from instaloader import Instaloader, Profile, NodeIterator
 
 
-PROFILO_LOGIN = ''
-PROFILO_ANALISI = ''
+PROFILO_LOGIN = 'alessandro.scaccia_'
+PROFILO_ANALISI = 'giulii_c_02'
 
 
-def salva(followers_iterator: NodeIterator[Profile], followees_iterator: NodeIterator[Profile]) -> None:
+def salva(followers_set: set, followees_set: set) -> None:
     '''
     Metodo per salvare i followers ed i followees su due file, commentare la sua chiamata
     nella funzione main per non sovrascrivere i file
     '''
     with open('tempFile/'+PROFILO_ANALISI+'_followers.txt', 'w') as file:
-        for followers in followers_iterator:
+        for followers in followers_set:
             file.write(followers.username + '\n')
 
     with open('tempFile/'+PROFILO_ANALISI+'_followees.txt', 'w') as file:
-        for followees in followees_iterator:
+        for followees in followees_set:
             file.write(followees.username + '\n')
 
     print('Salvataggio riuscito')
 
 
-def confronta(followers_iterator: NodeIterator[Profile], followees_iterator: NodeIterator[Profile],
+def confronta(followers_set: set, followees_set: set,
               file_followers: TextIOWrapper, file_followees: TextIOWrapper) -> None:
     '''
     Metodo per effettuare il confronto tra gli ultimi follower e followees, salvati
@@ -30,22 +30,25 @@ def confronta(followers_iterator: NodeIterator[Profile], followees_iterator: Nod
     '''
     old_followers_set = set()
     old_followees_set = set()
-    set_followers = set()
-    set_followees = set()
-    for follower in followers_iterator:
-        set_followers.add(follower.username)
-    for followee in followees_iterator:
-        set_followers.add(followee.username)
 
     for line in file_followers:
-        old_followers_set.add(line)
+        old_followers_set.add(line.strip('\n'))
     for line in file_followees:
-        old_followees_set.add(line)
+        old_followees_set.add(line.strip('\n'))
 
-    diff_nuovi_followers = set_followers.difference(old_followers_set)
-    diff_nuovi_followees = set_followees.difference(old_followees_set)
-    diff_persi_followers = old_followers_set.difference(set_followers)
-    diff_persi_followees = old_followees_set.difference(set_followees)
+    set_followers_username = set()
+    set_followees_username = set()
+
+    for follower in followers_set:
+        set_followers_username.add(follower.username)
+
+    for followee in followees_set:
+        set_followees_username.add(followee.username)
+
+    diff_nuovi_followers = set_followers_username.difference(old_followers_set)
+    diff_nuovi_followees = set_followees_username.difference(old_followees_set)
+    diff_persi_followers = old_followers_set.difference(set_followers_username)
+    diff_persi_followees = old_followees_set.difference(set_followees_username)
 
     print('Followers guadagnati: ')
     print(diff_nuovi_followers)
@@ -54,7 +57,7 @@ def confronta(followers_iterator: NodeIterator[Profile], followees_iterator: Nod
     print('Followees guadagnati: ')
     print(diff_nuovi_followees)
     print('Followees persi: ')
-    print(diff_nuovi_followees)
+    print(diff_persi_followees)
     print('Confronto effettuato')
 
 
@@ -72,8 +75,8 @@ def main() -> None:
 
     print('Recuperato profilo da analizzare: ' + profile.username)
 
-    followers_iterator = profile.get_followers()
-    followees_iterator = profile.get_followees()
+    followers_set = set(profile.get_followers())
+    followees_set = set(profile.get_followees())
 
     try:
         file_followers = open(
@@ -81,7 +84,7 @@ def main() -> None:
         file_followees = open(
             'tempFile/'+PROFILO_ANALISI+'_followees.txt', 'r')
 
-        confronta(followers_iterator, followees_iterator,
+        confronta(followers_set, followees_set,
                   file_followers, file_followees)
 
         file_followers.close()
@@ -91,7 +94,7 @@ def main() -> None:
     except:
         print('Errore generico nel tentativo di confrontare con dati salvati')
 
-    salva(followers_iterator, followees_iterator)
+    salva(followers_set, followees_set)
 
 
 if __name__ == '__main__':
