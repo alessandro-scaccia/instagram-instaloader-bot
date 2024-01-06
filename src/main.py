@@ -65,12 +65,19 @@ def main() -> None:
     '''
     Metodo principale richiamato durante l'esecuzione dello script
     '''
-    logging.basicConfig(filename="tempFile/logger.log", filemode="a",
-                        format="%(asctime)s - %(levelname)s : %(message)s", level=logging.INFO)
+    try:
+        logging.basicConfig(filename="tempFile/logger.log", filemode="a",
+                            format="%(asctime)s - %(levelname)s : %(message)s", level=logging.DEBUG)
+    except FileNotFoundError:
+        logging.basicConfig(filename="tempFile/logger.log", filemode="w+",
+                            format="%(asctime)s - %(levelname)s : %(message)s", level=logging.DEBUG)
+    except:
+        print("Non sono riuscito a creare il logger")
+
     logging.debug("ho inizializzato il logger")
     instaloader = Instaloader()
     # Recupero la sessione da un file creato in precedenza con l'esecuzione dello script fix_session.py
-    instaloader.load_session_from_file('alessandro.scaccia_')
+    instaloader.load_session_from_file(PROFILO_LOGIN)
     # instaloader.login(user=PROFILO_LOGIN,passw='') # Deprecated: sconsigliato perche' rischio ban instagram
     logging.debug('*** LOGIN RIUSCITO con utente: ' +
                   instaloader.context.username)
