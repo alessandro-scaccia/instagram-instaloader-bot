@@ -1,5 +1,6 @@
 from io import TextIOWrapper
-from instaloader import Instaloader, Profile, NodeIterator
+from instaloader import Instaloader, Profile
+import logging
 
 
 PROFILO_LOGIN = ''
@@ -19,7 +20,7 @@ def salva(followers_set: set, followees_set: set) -> None:
         for followees in followees_set:
             file.write(followees.username + '\n')
 
-    print('Salvataggio riuscito')
+    logging.info('Salvataggio riuscito')
 
 
 def confronta(followers_set: set, followees_set: set,
@@ -50,30 +51,32 @@ def confronta(followers_set: set, followees_set: set,
     diff_persi_followers = old_followers_set.difference(set_followers_username)
     diff_persi_followees = old_followees_set.difference(set_followees_username)
 
-    print('Followers guadagnati: ')
-    print(diff_nuovi_followers)
-    print('Followers persi: ')
-    print(diff_persi_followers)
-    print('Followees guadagnati: ')
-    print(diff_nuovi_followees)
-    print('Followees persi: ')
-    print(diff_persi_followees)
-    print('Confronto effettuato')
+    logging.info("Informazioni per account: " + PROFILO_ANALISI)
+
+    logging.info("Followers guadagnati: " + str(diff_nuovi_followers))
+    logging.info("Followers persi: " + str(diff_persi_followers))
+    logging.info("Followees guadagnati: " + str(diff_nuovi_followees))
+    logging.info("Followees persi: " + str(diff_persi_followees))
+
+    logging.debug("confronto terminato con successo")
 
 
 def main() -> None:
     '''
     Metodo principale richiamato durante l'esecuzione dello script
     '''
+    logging.basicConfig(filename="tempFile/logger.log", filemode="a",
+                        format="%(asctime)s - %(levelname)s : %(message)s", level=logging.INFO)
+    logging.debug("ho inizializzato il logger")
     instaloader = Instaloader()
     # Recupero la sessione da un file creato in precedenza con l'esecuzione dello script fix_session.py
     instaloader.load_session_from_file('alessandro.scaccia_')
     # instaloader.login(user=PROFILO_LOGIN,passw='') # Deprecated: sconsigliato perche' rischio ban instagram
-    print('*** LOGIN RIUSCITO con utente: ' + PROFILO_LOGIN)
+    logging.debug('*** LOGIN RIUSCITO con utente: ' +
+                  instaloader.context.username)
 
     profile = Profile.from_username(instaloader.context, PROFILO_ANALISI)
-
-    print('Recuperato profilo da analizzare: ' + profile.username)
+    logging.debug('ho recuperato il profilo: ' + profile.username)
 
     followers_set = set(profile.get_followers())
     followees_set = set(profile.get_followees())
@@ -90,10 +93,12 @@ def main() -> None:
         file_followers.close()
         file_followees.close()
     except FileNotFoundError:
-        print('Non ho trovato file con cui fare il confronto')
+        logging.error('Non ho trovato file con cui fare il confronto')
+    '''
     except:
-        print('Errore generico nel tentativo di confrontare con dati salvati')
-
+        logging.error(
+            'Errore generico nel tentativo di confrontare con dati salvati')
+'''
     salva(followers_set, followees_set)
 
 
